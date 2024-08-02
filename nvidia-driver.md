@@ -1,6 +1,9 @@
 # Initial secureboot and nvidia driver setup  
 
-There is a lot of garbage out there. This is based on my experience as to what should work.
+There is a lot of garbage out there.
+This is based on my experience as to what should work.
+It appears my issue stemmed from having luks enabled.
+
 
 1. Follow the secure boot instructions [here](https://rpmfusion.org/Howto/Secure%20Boot?highlight=%28%5CbCategoryHowto%5Cb%29)
 
