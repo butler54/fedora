@@ -1,0 +1,101 @@
+
+---
+- name: Install and update packages on Fedora
+  hosts: localhost
+  become: yes
+  vars:
+    packages:
+      - vim
+      - git
+      - htop
+      - tmux
+      - wget
+      - curl
+      - flatpak
+      - pinentry
+      - gpg
+      - gnupg2
+      - gnupg-pkcs11-scd
+      - pcsc-tools
+      - opensc
+      - pcsc-lite-ccid
+      - thunderbird
+      - obs-studio
+      - obs-studio-plugin-x264
+      - lm_sensors
+      - tailscale
+      - kubernetes-client
+      - helm
+
+    flatpak_apps:
+      - com.vscodium.codium
+      - io.github.shiftey.Desktop
+      - com.bitwarden.desktop
+      - com.brave.Browser
+      - org.signal.Signal
+      - com.jgraph.drawio.desktop
+      - com.spotify.Client
+      - io.github.endless_sky.endless_sky
+      - io.github.endless_sky.endless_sky.plugins.endless_sky_high_dpi
+      - com.mattjakeman.ExtensionManager
+
+
+  
+  tasks:
+    - name: Add Tailscale dnf repository
+      ansible.builtin.yum_repository:
+        name: tailscale
+        description: Tailscale Stable Repository
+        baseurl: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+        enabled: yes
+        gpgcheck: yes
+        gpgkey: https://pkgs.tailscale.com/stable/fedora/repo.gpg
+
+    - name: Update package cache
+      dnf:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Install specified packages
+      dnf:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Clean package cache
+      dnf:
+        autoremove: yes
+  
+    - name: Install Flatpak applications
+      flatpak:
+        name: "{{ item }}"
+        state: present
+        method: system
+      loop: "{{ flatpak_apps }}"
+    
+    - name: Update all Flatpak applications
+      ansible.builtin.shell:
+        cmd: flatpak update -y
+
+    - name: Setup sensors
+      ansible.builtin.shell:
+        cmd: sensors-detect --auto
+
+
+    - name: Ensure Tailscale service is started
+      ansible.builtin.systemd:
+        name: tailscaled
+        state: started
+        enabled: yes
+
+    # - name: Enab
+    #     ansible.builtin.systemd_service:
+    #       name: 
+    #       state: statred
+    #       enable
+
+    # Configure .gnupg config
+    # setup my bashrc
