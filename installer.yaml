@@ -95,6 +95,8 @@
     - name: setup git lfs
       ansible.builtin.shell:
         cmd: git-lfs install
+    
+    - 
 
     # - name: Enab
     #     ansible.builtin.systemd_service:
