@@ -26,6 +26,8 @@
       - tailscale
       - kubernetes-client
       - helm
+      - git-lfs
+      - gcc-c++
 
     flatpak_apps:
       - com.vscodium.codium
@@ -84,12 +86,15 @@
       ansible.builtin.shell:
         cmd: sensors-detect --auto
 
-
     - name: Ensure Tailscale service is started
       ansible.builtin.systemd:
         name: tailscaled
         state: started
         enabled: yes
+
+    - name: setup git lfs
+      ansible.builtin.shell:
+        cmd: git-lfs install
 
     # - name: Enab
     #     ansible.builtin.systemd_service:
