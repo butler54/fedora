@@ -1,0 +1,82 @@
+---
+- name: Install gcc 13 on fedora 40
+  hosts: localhost
+  # ansible_become_user: chris
+  # ansible_become_method: sudo 
+  vars:
+    foo: bar
+
+    # look the key ids up here: https://gcc.gnu.org/mirrors.html
+    gcckeys:
+      - 745C015A
+      - B75C61B8
+      - 902C9419
+      - F71EDF1C
+      - FC26A641
+      - C3C45C06
+      - 09B5FA62
+    gccversion: 13.3.0
+    gccsuffix: "13.3"
+  tasks:
+    # - name: Download signing cert
+    #   ansible.builtin.get_url:
+    #     url: http://example.com/path/file.conf
+    #     dest: /etc/foo.conf
+    #     mode: '0440'
+
+    - name: Import signing cert
+      ansible.builtin.shell:
+        cmd: "gpg --recv-keys {{ item }}"
+      loop: "{{ gcckeys }}" 
+
+    - name: Download gcc
+      ansible.builtin.get_url:
+        url: https://mirrors.middlendian.com/gnu/gcc/gcc-{{ gccversion }}/gcc-{{ gccversion }}.tar.xz
+        dest: /tmp/gcc.tar.xz
+    - name: Download gcc sig
+      ansible.builtin.get_url:
+        url: https://mirrors.middlendian.com/gnu/gcc/gcc-{{ gccversion }}/gcc-{{ gccversion }}.tar.xz.sig
+        dest: /tmp/gcc.tar.xz.sig
+  
+    - name: Validate signature
+      ansible.builtin.shell:
+        cmd: gpg --verify /tmp/gcc.tar.xz.sig /tmp/gcc.tar.xz
+  
+    - name: untar gcc
+      ansible.builtin.unarchive:
+        src: /tmp/gcc.tar.xz
+        dest: /tmp/
+        remote_src: yes
+
+    - name: make build dir
+      ansible.builtin.file:
+        path: /tmp/gcc-{{ gccversion }}/build
+        state: directory
+
+    - name: Configure
+      ansible.builtin.shell:
+        cmd: |
+          ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,lto \
+          --prefix=/usr/local/gcc-{{ gccsuffix }} --program-suffix=-{{ gccsuffix }} --mandir=/usr/share/man \
+          --infodir=/usr/share/info --enable-shared --enable-threads=posix \
+          --enable-checking=release --enable-multilib --with-system-zlib \
+          --enable-__cxa_atexit --disable-libunwind-exceptions \
+          --enable-gnu-unique-object --enable-linker-build-id \
+          --with-gcc-major-version-only --enable-libstdcxx-backtrace \
+          --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu \
+          --enable-plugin --enable-initfini-array --with-isl \
+          --enable-offload-targets=nvptx-none --enable-offload-defaulted \
+          --enable-gnu-indirect-function --enable-cet --with-tune=generic \
+          --with-arch_32=i686 --build=x86_64-redhat-linux \
+          --with-build-config=bootstrap-lto --enable-link-serialization=1 \
+          --with-default-libstdcxx-abi=new --with-build-config=bootstrap-lto
+        chdir: /tmp/gcc-{{ gccversion }}/build
+    
+    - name: Make
+      ansible.builtin.shell:
+        cmd: make -j28
+        chdir: /tmp/gcc-{{ gccversion }}/build
+    
+    # - name: build
+
+    # - name: Install to usr/local
