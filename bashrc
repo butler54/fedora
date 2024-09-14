@@ -9,7 +9,14 @@ fi
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
+
+# Add nvidia
+PATH="$PATH:/usr/local/cuda/bin"
 export PATH
+
+# Add venv
+source ~/venv/bin/activate
+
 
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=

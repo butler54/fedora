@@ -4,6 +4,7 @@
   hosts: localhost
   become: yes
   vars:
+    user: chris
     packages:
       - vim
       - git
@@ -28,6 +29,9 @@
       - helm
       - git-lfs
       - gcc-c++
+      - python3
+      - python3-pip
+      - python3-virtualenv
 
     flatpak_apps:
       - com.vscodium.codium
@@ -52,7 +56,6 @@
         enabled: yes
         gpgcheck: yes
         gpgkey: https://pkgs.tailscale.com/stable/fedora/repo.gpg
-
     - name: Update package cache
       dnf:
         update_cache: yes
@@ -96,7 +99,49 @@
       ansible.builtin.shell:
         cmd: git-lfs install
     
-    - 
+    - name: Setup bashrc
+      ansible.builtin.copy:
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        src: bashrc
+        dest: "/home/{{ user }}/.bashrc"
+    
+    - name: Ensure gpg directory exist
+      ansible.builtin.file:
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        path: "/home/{{ user }}/.gnupg"
+        state: directory
+
+    - name: Setup gpg agent 
+      ansible.builtin.copy:
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        src: gpg-agent.conf
+        dest: "/home/{{ user }}/.gnupg/gpg-agent.conf"
+
+    - name: Setup gpg conf
+      ansible.builtin.copy:
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        src: gpg.conf
+        dest: "/home/{{ user }}/.gnupg/gpg.conf"
+
+    - name: Copy requirements file to temp
+      ansible.builtin.copy:
+        src: requirements.txt
+        dest: "/tmp/requirements.txt"
+     
+    - name: Create Python virtual environment
+      ansible.builtin.pip:
+        requirements: /tmp/requirements.txt
+        virtualenv: "/home/{{ user }}/venv"
+        virtualenv_python: python3
+
+    - name: Clean up temp dir
+      ansible.builtin.file:
+        path: "/tmp/requirements.txt"
+        state: absent
 
     # - name: Enab
     #     ansible.builtin.systemd_service:
