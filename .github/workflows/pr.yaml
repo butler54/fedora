@@ -1,0 +1,46 @@
+name: Build bootc container based 
+
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+
+env:
+  REGISTRY_USER: rh-ee-chbutler
+  IMAGE_REGISTRY: quay.io
+
+jobs:
+  microbuild:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Quay.io
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ env.IMAGE_REGISTRY }}
+
+    - name: Log in to registry.redhat.io
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: registry.redhat.io
+
+    - name: build 
+    - name: Build Image
+      id: build-image
+      cwd: bootc
+      run: buildah unshare ./micro/minisleep/buildscript.sh
+
+    - name: Push To quay.io
+      id: push-to-quay
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: microsleep
+        tags: latest
+        registry: quay.io/${{ env.REGISTRY_USER }}
