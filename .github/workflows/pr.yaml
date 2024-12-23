@@ -1,4 +1,4 @@
-name: Build bootc container based 
+name: Build bootc container based on pr to latest
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ env:
   IMAGE_REGISTRY: quay.io
 
 jobs:
-  microbuild:
+  buildlatest:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -30,17 +30,3 @@ jobs:
         username: ${{ env.REGISTRY_USER }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
         registry: registry.redhat.io
-
-    - name: build 
-    - name: Build Image
-      id: build-image
-      cwd: bootc
-      run: buildah unshare ./micro/minisleep/buildscript.sh
-
-    - name: Push To quay.io
-      id: push-to-quay
-      uses: redhat-actions/push-to-registry@v2
-      with:
-        image: microsleep
-        tags: latest
-        registry: quay.io/${{ env.REGISTRY_USER }}
