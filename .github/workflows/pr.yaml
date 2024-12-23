@@ -38,12 +38,11 @@ jobs:
     - name: Build Image
       id: build-image
       uses: redhat-actions/buildah-build@v2
-      working-directory: bootc
       with:
         image: ${{ env.IMAGE }}
         tags: latest ${{ github.sha }}
         containerfiles: |
-         ./Containerfile
+         ./bootc/Containerfile
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.7.0
