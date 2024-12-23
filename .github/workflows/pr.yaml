@@ -43,6 +43,8 @@ jobs:
         tags: latest ${{ github.sha }}
         containerfiles: |
          ./bootc/Containerfile
+    - name: list images
+      run: podman images
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@v3.7.0
