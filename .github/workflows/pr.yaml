@@ -7,6 +7,7 @@ on:
 env:
   REGISTRY_USER: rh-ee-chbutler
   IMAGE_REGISTRY: quay.io
+  IMAGE: fedora
 
 jobs:
   buildlatest:
@@ -28,3 +29,23 @@ jobs:
         username: ${{ env.REGISTRY_USER }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
         registry: registry.redhat.io
+
+
+    - name: Build Image
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      working-directory: bootc
+      with:
+        image: ${{ env.IMAGE }}
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+         ./Containerfile
+
+
+    - name: Push To quay.io
+      id: push-to-quay
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ env.IMAGE }}
+        tags: latest
+        registry: quay.io/${{ env.REGISTRY_USER }}
