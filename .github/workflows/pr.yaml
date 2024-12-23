@@ -50,7 +50,7 @@ jobs:
       uses: sigstore/cosign-installer@v3.7.0
 
     - name: Sign using oidc
-      run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}@latest
+      run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}:latest
 
 
     - name: Push To quay.io
