@@ -43,7 +43,12 @@
       - gcc-gnat
       - gcc-gdc
       - libgphobos-static
-
+      - awscli2
+      - hidapi
+      - i2c-tools
+      - python3.11
+      - python3.12
+      
     flatpak_apps:
       - com.vscodium.codium
       - io.github.shiftey.Desktop
@@ -162,3 +167,5 @@
 
     # Configure .gnupg config
     # setup my bashrc
+# Add pull of latest openrgb
+
