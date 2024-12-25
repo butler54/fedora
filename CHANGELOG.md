@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.2.1 (2024-12-25)
+
+### Fix
+
+* fix: remove uneeded pushes (#6)
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt;
+
+---------
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt; ([`4b2b649`](https://github.com/butler54/fedora/commit/4b2b6496fd9ad67a1ecc52bb935b9501e3e9ec48))
+
 ## v0.2.0 (2024-12-25)
 
 ### Feature
