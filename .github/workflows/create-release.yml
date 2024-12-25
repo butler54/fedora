@@ -1,0 +1,63 @@
+name: Validate bootc build and release
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY_USER: rh-ee-chbutler
+  IMAGE_REGISTRY: quay.io
+  IMAGE: fedora
+
+jobs:
+  testbuild:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Quay.io
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ env.IMAGE_REGISTRY }}
+
+    - name: Log in to registry.redhat.io
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ env.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: registry.redhat.io
+
+
+    - name: Build Image
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: "${{ env.IMAGE }}"
+        tags: latest ${{ github.sha }}
+        containerfiles: |
+         ./bootc/Containerfile
+  release:
+    runs-on: ubuntu-latest
+    needs: testbuild
+    permissions:
+      id-token: write
+    steps:
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+      with:
+        app-id: ${{ secrets.APP_ID }}
+        private-key: ${{ secrets.PRIVATE_KEY }}
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+        token: ${{ steps.app-token.outputs.token }}
+    - name: Python Semantic Release
+      id: release
+      uses: python-semantic-release/python-semantic-release@v9.8.8
+      with:
+        github_token: ${{ steps.app-token.outputs.token }}
