@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.2.0 (2024-12-25)
+
+### Feature
+
+* feat: add releaser (#5)
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt;
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt; ([`bb7bed0`](https://github.com/butler54/fedora/commit/bb7bed0e9dcd0b3778ec8c622810290840f14fd4))
+
 ## v0.1.0 (2024-12-25)
 
 ### Chore
