@@ -54,11 +54,9 @@ jobs:
         image: ${{ env.IMAGE }}
         tags: latest ${{ github.sha }}
         registry: quay.io/${{ env.REGISTRY_USER }}
-    - name: Get image digest
-      run: echo `podman images localhost/${{ env.IMAGE }}:latest --digests  --format '{{.Digest}}'`
 
 
-    - name: Sign using oidc
-      run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}:${{ steps.imagesha.outputs.sha_digest }}
+    - name: Sign image
+      run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}:`podman image inspect --format '{{ .Digest }}' quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}`
 
 
