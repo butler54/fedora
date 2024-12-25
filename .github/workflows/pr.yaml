@@ -15,7 +15,8 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write 
+      packages: write
+      id-token: write
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -57,6 +58,6 @@ jobs:
 
 
     # - name: Sign image
-    #   run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}:`podman image inspect --format '{{ .Digest }}' quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}`
+    #   run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}@sha:`podman image inspect --format '{{ .Digest }}' quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}`
 
 
