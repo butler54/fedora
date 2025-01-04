@@ -28,6 +28,12 @@ jobs:
       run: |
         VERSION=${GITHUB_REF#refs/tags/v}
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Install qemu dependency
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static
+    
     - name: Log in to Quay.io
       uses: redhat-actions/podman-login@v1
       with:
@@ -47,7 +53,8 @@ jobs:
       uses: redhat-actions/buildah-build@v2
       with:
         image: "${{ env.IMAGE }}"
-        tags: latest prod ${{ steps.parse_version.outputs.VERSION }} ${{ github.sha }} 
+        tags: latest prod ${{ steps.parse_version.outputs.VERSION }} ${{ github.sha }}
+        platforms: linux/amd64, linux/arm64
         containerfiles: |
           ./bootc/Containerfile
   
