@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.3.0 (2025-01-04)
+
+### Feature
+
+* feat: add multiarch build (#7)
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt;
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt; ([`79d820d`](https://github.com/butler54/fedora/commit/79d820d8dfa30af35db93d2d901a58507261b430))
+
 ## v0.2.1 (2024-12-25)
 
 ### Fix
