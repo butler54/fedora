@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.3.1 (2025-01-06)
+
+### Fix
+
+* fix: clean up pipelines (#8)
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt;
+
+---------
+
+Signed-off-by: Chris Butler &lt;chris.butler@redhat.com&gt; ([`fdbc3ea`](https://github.com/butler54/fedora/commit/fdbc3ea8ddd5d8ee4ea76d91025ba517b91d8e5e))
+
 ## v0.3.0 (2025-01-04)
 
 ### Feature
