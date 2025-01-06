@@ -50,20 +50,3 @@ jobs:
         platforms: linux/amd64, linux/arm64
         containerfiles: |
          ./bootc/Containerfile
-    # only push on main 
-    # - name: Install Cosign
-    #   uses: sigstore/cosign-installer@v3.7.0
-
-    # - name: Get image sha
-    #   id: imagesha
-    #   uses: redhat-actions/push-to-registry@v2
-    #   with:
-    #     image: ${{ env.IMAGE }}
-    #     tags: latest ${{ github.sha }}
-    #     registry: quay.io/${{ env.REGISTRY_USER }}
-
-
-    # - name: Sign image
-    #   run: cosign sign -y -a sha=${{ github.sha }} -a run_id=${{github.run_id}} -a run_attempt="$GITHUB_RUN_ATTEMPT" quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}@sha:`podman image inspect --format '{{ .Digest }}' quay.io/${{ env.REGISTRY_USER }}/${{ env.IMAGE }}`
-
-
