@@ -78,9 +78,9 @@
 ### Implementation for User Story 2
 
 - [x] T019 [P] [US2] Create fixture generators `scripts/fixtures/broken-image/` (Containerfile variant with `PasswordAuthentication yes` and an extra open port baked) and `scripts/fixtures/healthy-image/` (passes all automatable items), each with a README line explaining which checklist item it trips/passes.
-- [ ] T020 [US2] Implement every automatable check command in `scripts/hardening-verify.sh` for items H001–H004, H010–H015, H020–H022, H030–H031 exactly as declared in `specs/002-hardened-bootc-pipeline/checklists/hardening.md`, with dual-phase support (`--phase image|runtime`), item-id selection (`--only H010`), and verdict-matrix emission matching `contracts/hardening-checklist.md`.
+- [x] T020 [US2] Implement every automatable check command in `scripts/hardening-verify.sh` for items H001–H004, H010–H015, H020–H022, H030–H031 exactly as declared in `specs/002-hardened-bootc-pipeline/checklists/hardening.md`, with dual-phase support (`--phase image|runtime`), item-id selection (`--only H010`), and verdict-matrix emission matching `contracts/hardening-checklist.md`.
 - [ ] T021 [US2] Negative-gate proof: run `scripts/pipeline.sh` against the broken fixture as build input (fixture-mode flag); assert exit code 4, no `f44-hardened-*` domain released, and the run record shows `failed` with the failing item IDs; capture terminal + record excerpts into `state/donnager-linux-<date>.pipeline-acceptance.md`.
-- [ ] T022 [US2] Positive-gate proof: run engine directly against the healthy fixture (`--against fixture:healthy`), assert exit 0 and a full-PASS matrix; append evidence to `state/donnager-linux-<date>.pipeline-acceptance.md`.
+- [x] T022 [US2] Positive-gate proof: run engine directly against the healthy fixture (`--against fixture:healthy`), assert exit 0 and a full-PASS matrix; append evidence to `state/donnager-linux-<date>.pipeline-acceptance.md`.
 
 **Checkpoint**: gate proven fail-closed (negative) and functional (positive). SC-003 demonstrably met.
 
