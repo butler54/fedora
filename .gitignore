@@ -162,3 +162,10 @@ cython_debug/
 #.idea/
 .vscode/
 .claude/
+
+# State capture artifacts (feature 001-capture-system-state)
+state/
+
+# Pipeline helper lib must NOT be ignored (overrides Python template's lib/)
+!scripts/lib/
+!scripts/lib/**

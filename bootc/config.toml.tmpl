@@ -1,0 +1,30 @@
+# bootc/config.toml.tmpl — bootc-image-builder config (gomplate template).
+# Render with:
+#   SSH_PUBKEY          public key line for the default user (required)
+#   VM_HOSTNAME         hostname for the VM (default: f44-hardened)
+#   REGISTRY_PULL_SECRET  optional: contents of /etc/ostree/auth.json for
+#                         private-registry pulls inside the VM. NEVER commit
+#                         the rendered output anywhere.
+
+[customizations]
+hostname = "{{ getenv "VM_HOSTNAME" | default "f44-hardened" }}"
+
+[[customizations.user]]
+name = "chris"
+password = "*"
+groups = ["wheel"]
+{{ if (getenv "SSH_PUBKEY" | default "") -}}
+key = {{ getenv "SSH_PUBKEY" | quote }}
+{{ end -}}
+
+[customizations.services]
+enabled = ["sshd.service", "bootc-fetch-apply-updates.timer"]
+
+{{- if (getenv "REGISTRY_PULL_SECRET" | default "") }}
+[[customizations.files]]
+path = "/etc/ostree/auth.json"
+data = {{ getenv "REGISTRY_PULL_SECRET" | quote }}
+mode = "0600"
+user = "root"
+group = "root"
+{{- end }}

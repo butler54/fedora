@@ -1,0 +1,2 @@
+enable sshd.service
+enable bootc-fetch-apply-updates.timer
