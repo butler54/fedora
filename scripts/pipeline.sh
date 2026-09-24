@@ -178,7 +178,7 @@ stage_build() {
 stage_scan() {
   stage_tic
   ssh_push_dir "$HOST" "scripts/" "\$HOME/pipeline-work/scripts/"
-  ssh_run "$HOST" "IMAGE_REF='${BUILT_REF}' bash \$HOME/pipeline-work/scripts/hardening-verify.sh --phase image" \
+  ssh_run "$HOST" "CTX_DIR_OVERRIDE='\$HOME/pipeline-work/ctx-${RUN_ID}' IMAGE_REF='${BUILT_REF}' bash \$HOME/pipeline-work/scripts/hardening-verify.sh --phase image" \
     || { RESULT_NOTES="image-phase hardening FAIL"; die "hardening gate (image phase) failed" $EXIT_GATE; }
   DUR_scan=$(stage_toc)
 }
@@ -216,7 +216,7 @@ build_qcow2() {
       -v \$HOME/pipeline-work/ctx-${RUN_ID}:/cfg \
       -v \$HOME/vms:/out \
       '${BUILDER_IMAGE}@${BUILDER_DIGEST}' \
-      --image '${BUILT_REF}' --config /cfg/config.toml --type qcow2 --output /out \
+      build '${BUILT_REF}' --config /cfg/config.toml --type qcow2 --output /out \
       >/tmp/bib-${RUN_ID}.log 2>&1" \
     || { rc=$?; [ "$rc" -eq 7 ] && { RESULT_NOTES="qcow2 collision"; die "qcow2 exists" $EXIT_COLLISION; }; \
          RESULT_NOTES="bib failed (log: /tmp/bib-${RUN_ID}.log)"; die "bib qcow2 failed" $EXIT_GATE; }

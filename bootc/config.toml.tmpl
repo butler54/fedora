@@ -6,16 +6,16 @@
 #                         private-registry pulls inside the VM. NEVER commit
 #                         the rendered output anywhere.
 
+[customizations]
+hostname = "{{ getenv "VM_HOSTNAME" | default "f44-hardened" }}"
+
 [[customizations.user]]
 name = "chris"
 password = "*"
 groups = ["wheel"]
-{{- if (getenv "SSH_PUBKEY" | default "") -}}
+{{ if (getenv "SSH_PUBKEY" | default "") -}}
 key = {{ getenv "SSH_PUBKEY" | quote }}
-{{- end }}
-
-[customizations.hostname]
-hostname = "{{ getenv "VM_HOSTNAME" | default "f44-hardened" }}"
+{{ end -}}
 
 [customizations.services]
 enabled = ["sshd.service", "bootc-fetch-apply-updates.timer"]

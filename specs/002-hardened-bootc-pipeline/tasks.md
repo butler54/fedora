@@ -26,9 +26,9 @@
 
 **Purpose**: close access gaps and land the verified pin values the pipeline depends on.
 
-- [ ] T001 Re-establish BatchMode SSH to `chris@donnager-linux` (re-add agent identity, e.g. `ssh-add` YubiKey key) and verify: `ssh -o BatchMode=yes chris@donnager-linux true` succeeds with no prompt.
-- [ ] T002 [P] Run quickstart Q0.1 bundle verification on the lab host (`ssh chris@donnager-linux 'dnf group info container-management'`) and append the output verbatim to `state/donnager-linux-20260923.pipeline-notes.md` as decision evidence for research.md D5.
-- [ ] T003 [P] Run quickstart Q0.2 (`dnf list --available "akmod-nvidia*" "kmod-nvidia*"` on the host), append the matrix (package, version, repo) to `state/donnager-linux-20260923.pipeline-notes.md` as decision evidence for research.md D6.
+- [x] T001 Re-establish BatchMode SSH to `chris@donnager-linux` (re-add agent identity, e.g. `ssh-add` YubiKey key) and verify: `ssh -o BatchMode=yes chris@donnager-linux true` succeeds with no prompt.
+- [x] T002 [P] Run quickstart Q0.1 bundle verification on the lab host (`ssh chris@donnager-linux 'dnf group info container-management'`) and append the output verbatim to `state/donnager-linux-20260923.pipeline-notes.md` as decision evidence for research.md D5.
+- [x] T003 [P] Run quickstart Q0.2 (`dnf list --available "akmod-nvidia*" "kmod-nvidia*"` on the host), append the matrix (package, version, repo) to `state/donnager-linux-20260923.pipeline-notes.md` as decision evidence for research.md D6.
 - [x] T004 [P] Resolve and pin digests: `ssh chris@donnager-linux podman inspect quay.io/fedora/fedora-bootc:44` (or skopeo) and `quay.io/centos-bootc/bootc-image-builder:latest`; write `bootc/variables.env` containing `BASE_DIGEST=`, `BUILDER_DIGEST=`, `REGISTRY_REF_DEFAULT=quay.io/<namespace>/hardened-f44:latest` (namespace placeholder OK — parameterized at runtime).
 
 ---

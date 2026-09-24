@@ -273,10 +273,87 @@ mid-session (YubiKey-backed key absent from ssh-agent). They do NOT block plan
 approval; they gate the listed tasks:
 
 - `dnf group info` snapshots for groups chosen in D5 (records exact bundle
-  membership at pin time).
+  membership at pin time). *Resolved 2026-09-24 — evidence in
+  `state/donnager-linux-20260923.pipeline-notes.md`.*
 - rpmfusion F44 availability matrix for `akmod-nvidia-open`/`kmod-nvidia-open`
   (validates D6 recommendation wording with live version numbers).
+  *Resolved 2026-09-23 — akmod-nvidia-open 3:615.71.09-1.fc44 confirmed.*
 - Verification that `quay.io/fedora/fedora-bootc:44` digest at pin time resolves
   identically from the lab host (`skopeo inspect --no-tags docker://...`).
+  *Resolved 2026-09-24 via quay.io API from the authoring host.*
 
 All are appended to `quickstart.md` Q-series acceptance steps.
+
+---
+
+## Part B — Post-plan exploration: write-over alternatives for the host (2026-09-24)
+
+**Trigger**: pipeline's QCOW2 stage cannot run unprivileged on donnager-linux
+(bib requires rootful podman; rootless `--in-vm` breaks on an upstream
+nested-environment bug). Owner instructed: *"explore, do not act, on whether
+bootc image builder/bootc can write over the current system."* All findings
+below produced by read-only inspection (`--help` output, package inventory,
+prior feature-001 state). **No host mutation was performed.**
+
+### E1 — bib on the host (any type)
+
+bootc-image-builder requires rootful podman for every image type including
+`bootc-installer` and `anaconda-iso`. On donnager-linux this reduces to one of:
+
+- per-run interactive `sudo` (no host change, not unattended),
+- a scoped NOPASSWD sudoers.d rule (host config change — git-diffable in
+  SC-007 regression checks),
+- off-host build (exotic for an amd64 target from an arm64 authoring machine).
+
+### E2 — `bootc install to-existing-root` on the host (read-only findings)
+
+Host binary: `bootc 1.16.10`. Behaviour of `to-existing-root`:
+
+- Default `--replace alongside`: wipes **bootloader** state only; the running
+  system's root content remains until reboot into the new deployment. The old
+  deployment is NOT a bootc deployment (host is traditional rpm Fedora), so
+  rollback is via rescue/reinstall, not `bootc rollback` on day 0. After the
+  first successful boot, rollback semantics become proper.
+- Supports `--source-imgref` (registry ref), `--target-transport oci/registry`,
+  `--enforce-container-sigpolicy` (signature verification — aligns with the
+  deferred cosign follow-up), `--root-ssh-authorized-keys`, `--karg`.
+- Requires root (manual, human-initiated `sudo` — appropriate for a
+  one-time migration command; not for unattended reruns).
+
+### E3 — `bootc switch <registry-ref>` from a stock bootc-test VM-style flow
+
+Baseline `bootc switch` requires the host to ALREADY be an ostree/bootc system —
+it is not (feature-001: mutable rpm Fedora). So E3 is only the day-2 flow
+AFTER an initial E2-style conversion. `switch` would then silently apply an
+atomic, rollback-capable change — exactly matching constitution P.II.
+
+### E4 — VM-verified-then-host-write-over (RECOMMENDED, replaces D3's assumption)
+
+Chain: (1) this feature's pipeline validates a candidate HOST image in a VM
+on the lab host (user-session libvirt, no host mutation); (2) on PASS, a
+*manual* one-time `sudo bootc install to-existing-root`/`bootc switch` applies
+the image to donnager-linux. The pipeline itself remains 100% unprivileged;
+only the conscious migration step carries privilege — matching constitution
+P.III (privilege minimization) and P.IV (verified-before-change).
+
+Note this requires a HOST image definition (different from the VM image):
+GUI packages, NVIDIA kernel modules baked or layered via signed kmod images,
+FRR + tailscale + syncthing services, and the resolved feature-001 findings
+list. That host image is the follow-up feature (003) and is out of scope here.
+
+### Consequence for feature 002
+
+The current QCOW2 stage remains the *VM verification* stage. Its execution
+now has three viable mechanisms (decision pending owner approval):
+
+| Mechanism | Host impact | Unattended? |
+|-----------|-------------|-------------|
+| `sudo podman` per run (interactive password) | none | no (pause per run) |
+| scoped NOPASSWD sudoers.d rule | 1 file, documented | yes |
+| `to-existing-root`→VM-swap staging converter | none during 002 | n/a (post-003 flow) |
+
+The E4 chain means the sudo decision is deferred to feature 003 (host image),
+where the one-time privileged action is legitimately human-driven. For 002,
+the recommended immediate course is the **interactive sudo per run** option or
+deferring QCOW2 (server verification) — the image builds and image-phase gate
+are already green regardless.
